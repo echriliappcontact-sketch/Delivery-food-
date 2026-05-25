@@ -1,0 +1,1064 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إليزي إكسبريس | سلة الطلبات المتعددة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #d35400;
+            --secondary: #2c3e50;
+            --accent: #27ae60;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg); color: var(--secondary); line-height: 1.6; }
+
+        header {
+            background: linear-gradient(135deg, var(--secondary), #1a252f);
+            color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px 100px; }
+
+        .page { transition: 0.3s ease-in-out; }
+        .hidden { display: none; }
+
+        /* Restaurant Cards */
+        .res-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .res-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: var(--shadow);
+            border: 1px solid #eee;
+        }
+
+        .res-card:hover { transform: translateY(-10px); border-color: var(--primary); }
+        .res-card i { font-size: 3.5rem; color: var(--primary); margin-bottom: 15px; }
+
+        /* Menu Section */
+        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; }
+        
+        .menu-item {
+            background: var(--white);
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .item-detail { display: flex; align-items: center; gap: 12px; }
+        .item-icon { font-size: 1.5rem; }
+        .item-name { font-weight: 600; }
+        .item-price { color: var(--primary); font-weight: bold; }
+
+        .btn-add {
+            background: var(--accent);
+            color: white; border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Cart Floating Bar */
+        #cart-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        /* Checkout Form */
+        .checkout-card { background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow); }
+        .cart-summary-list { margin-bottom: 20px; background: #fdfdfd; border-radius: 10px; padding: 15px; }
+        .cart-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1.5px solid #eee; border-radius: 10px; font-size: 1rem; outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        
+        .addon-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .addon-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; background: #f9f9f9; padding: 8px; border-radius: 8px; }
+        .addon-item input { width: auto; }
+
+        .badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+
+        /* Orders Page */
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-id { font-weight: bold; color: var(--primary); font-size: 0.9rem; }
+        .order-date { font-size: 0.8rem; color: #999; }
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-preparing { background: #d1ecf1; color: #0c5460; }
+        .status-delivering { background: #d4edda; color: #155724; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .order-items-list { font-size: 0.85rem; color: #555; margin: 10px 0; }
+        .order-items-list div { padding: 3px 0; }
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-weight: bold;
+        }
+        .order-timer-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 12px;
+        }
+        .order-timer-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: monospace;
+            direction: ltr;
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0 5px;
+            position: relative;
+        }
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #e0e0e0;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            z-index: 1;
+            font-size: 0.65rem;
+            color: #bbb;
+        }
+        .step.active { color: var(--accent); }
+        .step.done { color: var(--primary); }
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+        }
+        .step.active .step-circle { background: var(--accent); }
+        .step.done .step-circle { background: var(--primary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state i { font-size: 4rem; margin-bottom: 15px; color: #ddd; }
+
+        /* Saved info banner */
+        .saved-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="https://i.imgur.com/NfO2kQi.jpeg" alt="إليزي إكسبريس" style="max-width: 280px; width: 100%; height: auto; margin-bottom: 10px; border-radius: 12px;">
+    <p>اطلب من أفضل مطاعم ولاية إليزي في مكان واحد</p>
+</header>
+
+<div class="container">
+    
+    <div id="page-res" class="page">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+            <h2>اختر المطعم</h2>
+            <button onclick="navigateTo('orders')" style="background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">
+                <i class="fas fa-receipt"></i> طلباتي
+            </button>
+        </div>
+        <div class="res-grid" id="res-list"></div>
+    </div>
+
+    <div id="page-menu" class="page hidden">
+        <div class="header-box">
+            <button onclick="goBackToRes()" style="border:none; background:none; cursor:pointer; color:var(--primary); font-weight:bold;">
+                <i class="fas fa-chevron-right"></i> تغيير المطعم
+            </button>
+            <h3 id="menu-title">المطعم</h3>
+        </div>
+        <div id="items-list"></div>
+    </div>
+
+    <div id="page-checkout" class="page hidden">
+        <div class="header-box">
+            <button onclick="showPage('page-menu')" style="border:none; background:none; cursor:pointer; color:var(--primary); font-weight:bold;">
+                <i class="fas fa-chevron-right"></i> إضافة المزيد
+            </button>
+            <h3>تأكيد الطلبية</h3>
+        </div>
+
+        <div class="checkout-card">
+            <div id="saved-info-banner"></div>
+            <form id="final-form" onsubmit="submitOrder(event)">
+                <div class="cart-summary-list" id="final-cart-summary">
+                    </div>
+
+                <div style="background: #fff8f3; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ffe0cc;">
+                    <div class="cart-row"><span>سعر التوصيل:</span> <span id="summary-delivery">0</span> دج</div>
+                    <div class="cart-row" style="font-weight: bold; color: var(--primary); font-size: 1.2rem;">
+                        <span>الإجمالي الكلي:</span> <span id="summary-total">0</span> دج
+                    </div>
+                </div>
+
+                <input type="hidden" name="_subject" value="طلب جديد من إليزي إكسبريس">
+                <input type="hidden" name="قائمة_الطلبات" id="hidden-cart-data">
+                <input type="hidden" name="المطعم" id="hidden-res-name">
+                <input type="hidden" name="المبلغ_الإجمالي" id="hidden-total-price">
+
+                <div class="form-group">
+                    <label>الاسم واللقب</label>
+                    <input type="text" name="الزبون" placeholder="الاسم الكامل" required>
+                </div>
+
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" name="الهاتف" placeholder="06 / 07 / 05" required>
+                </div>
+
+                <div class="form-group">
+                    <label>الحي ووصف المكان</label>
+                    <textarea name="العنوان" rows="2" placeholder="مثال: حي 123 مسكن ، بجانب مخبزة بن زاير" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>إضافات عامة للطلب</label>
+                    <div class="addon-box">
+                        <div class="addon-item"><input type="checkbox" name="إضافات" value="هريسة"> هريسة</div>
+                        <div class="addon-item"><input type="checkbox" name="إضافات" value="مايونيز"> مايونيز</div>
+                        <div class="addon-item"><input type="checkbox" name="إضافات" value="جبن"> جبن</div>
+                        <div class="addon-item"><input type="checkbox" name="إضافات" value="كاتشب"> كاتشب</div>
+                    </div>
+                </div>
+
+                <!-- وقت التوصيل المتوقع -->
+                <div style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-motorcycle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <h4 style="margin-bottom: 8px; font-size: 1.1rem;">⏰ وقت التوصيل المتوقع</h4>
+                    <p style="font-size: 1rem; margin-bottom: 12px;">يصل الطلب خلال <strong>30 دقيقة</strong></p>
+                    <div id="delivery-timer-box" style="display: none;">
+                        <div style="background: rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 20px; display: inline-block;">
+                            <span style="font-size: 0.85rem; opacity: 0.9;">مرّ على طلبك:</span>
+                            <div id="delivery-timer" style="font-size: 2rem; font-weight: bold; font-family: monospace; direction: ltr; margin-top: 5px;">00:00</div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div id="timer-progress" style="background: rgba(255,255,255,0.3); border-radius: 10px; height: 8px; overflow: hidden; max-width: 250px; margin: 0 auto;">
+                                <div id="timer-bar" style="background: white; height: 100%; width: 0%; border-radius: 10px; transition: width 1s linear;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; opacity: 0.8;" id="timer-status">في انتظار تأكيد الطلب...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تقييمات الزبائن -->
+                <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #eee;">
+                    <h4 style="margin-bottom: 15px; text-align: center;"><i class="fas fa-star" style="color: #f39c12;"></i> تقييمات الزبائن</h4>
+                    
+                    <div class="review-item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="font-size: 0.9rem;">أحمد بن صالح</strong>
+                            <span style="color: #f39c12;">★★★★★</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666;">مطعم ممتاز، الأكل وصل ساخن ובوقت قصير. التوصيل سريع جداً 👍</p>
+                    </div>
+
+                    <div class="review-item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="font-size: 0.9rem;">فاطمة الزهراء</strong>
+                            <span style="color: #f39c12;">★★★★☆</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666;">البيتزا لذيذة جداً والأسعار معقولة. أنصح بالتجربة 🍕</p>
+                    </div>
+
+                    <div class="review-item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="font-size: 0.9rem;">كريم مرابط</strong>
+                            <span style="color: #f39c12;">★★★★★</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666;">خدمة رائعة! الطلب وصلني في أقل من 30 دقيقة. أحسن مطعم في إليزي 🔥</p>
+                    </div>
+
+                    <div class="review-item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="font-size: 0.9rem;">نور الدين بلخيري</strong>
+                            <span style="color: #f39c12;">★★★★☆</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666;">المقلوب والشواء ممتازين. التوصيل كان سريع والسعر مناسب 👌</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong style="font-size: 0.9rem;">سارة بوعلام</strong>
+                            <span style="color: #f39c12;">★★★★★</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666;">طلبت مرتين وكل مرة الأكل طيب وساخن. التعامل محترم ❤️</p>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px; padding-top: 12px; border-top: 1px solid #eee;">
+                        <span style="font-size: 1.2rem; color: #f39c12; font-weight: bold;">4.8</span>
+                        <span style="color: #f39c12; margin: 0 3px;">★★★★★</span>
+                        <span style="font-size: 0.8rem; color: #999;">(127 تقييم)</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">إرسال الطلب الآن <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- صفحة طلباتي -->
+    <div id="page-orders" class="page hidden">
+        <div class="header-box">
+            <button onclick="showPage('page-res')" style="border:none; background:none; cursor:pointer; color:var(--primary); font-weight:bold;">
+                <i class="fas fa-chevron-right"></i> الرئيسية
+            </button>
+            <h3>طلباتي السابقة</h3>
+        </div>
+        <div id="orders-list"></div>
+    </div>
+
+</div>
+
+<div id="cart-bar" class="hidden">
+    <div>
+        <i class="fas fa-shopping-basket"></i> 
+        <span id="cart-count">0</span> وجبات
+    </div>
+    <div id="cart-total-preview">0 دج</div>
+    <button onclick="showPage('page-checkout')" style="background:var(--accent); color:white; border:none; padding:8px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">
+        إتمام الطلب
+    </button>
+</div>
+
+<script>
+    // ========== DATA ==========
+    const restaurants = [
+        { id: 1, name: "مطعم و بيتزيريا الكرامة", icon: "fa-utensils", delivery: 90, items: [
+            {n:"شوربة باللحم", p:400, i:"🥣"}, {n:"روطي لحم", p:500, i:"🥩"}, {n:"المفور", p:500, i:"🍖"},
+            {n:"شطيطحة لحم", p:500, i:"🥩"}, {n:"كبدة كمونية", p:500, i:"🧆"}, {n:"دجاجة كاملة", p:800, i:"🍗"},
+            {n:"روطي دجاج", p:300, i:"🍗"}, {n:"كبدة", p:300, i:"🧆"}, {n:"سكالوب", p:250, i:"🥩"},
+            {n:"كوتليط", p:250, i:"🍖"}, {n:"شواء", p:250, i:"🍢"}, {n:"شوربة بدون لحم", p:200, i:"🥣"},
+            {n:"طعام", p:250, i:"🍲"}, {n:"شخشوخة", p:250, i:"🥘"}, {n:"شكشوكة", p:250, i:"🍳"},
+            {n:"لوبيا", p:250, i:"🥘"}, {n:"عدس", p:250, i:"🥣"}, {n:"روز", p:250, i:"🍚"},
+            {n:"بيري", p:250, i:"🍚"}, {n:"مقارونة", p:250, i:"🍝"}, {n:"سباغيتي", p:250, i:"🍝"},
+            {n:"شوفلور", p:250, i:"🥦"}, {n:"مقارونة بالفرماج", p:250, i:"🧀"}, {n:"حميص", p:250, i:"🌶️"},
+            {n:"بطاطا كوشة", p:250, i:"🥔"}, {n:"قرانا بطاطا", p:250, i:"🥔"}, {n:"فريت أومليت", p:250, i:"🍳"},
+            {n:"سلطة", p:250, i:"🥗"}, {n:"زيتون", p:250, i:"🫒"}, {n:"ديسير", p:250, i:"🍮"},
+            {n:"بيتزا تن صغيرة", p:350, i:"🍕"}, {n:"بيتزا تن كبيرة", p:500, i:"🍕"},
+            {n:"بيتزا مرغريت صغيرة", p:300, i:"🍕"}, {n:"بيتزا مرغريت كبيرة", p:400, i:"🍕"},
+            {n:"بيتزا 4 فصول صغيرة", p:500, i:"🍕"}, {n:"بيتزا 4 فصول كبيرة", p:700, i:"🍕"},
+            {n:"بيتزا غلال البحر صغيرة", p:500, i:"🍕"}, {n:"بيتزا غلال البحر كبيرة", p:800, i:"🍕"},
+            {n:"بيتزا سيسيليان صغيرة", p:400, i:"🍕"}, {n:"بيتزا سيسيليان كبيرة", p:600, i:"🍕"},
+            {n:"بيتزا شورما صغيرة", p:400, i:"🍕"}, {n:"بيتزا شورما كبيرة", p:800, i:"🍕"},
+            {n:"بيتزا فيونداشي صغيرة", p:400, i:"🍕"}, {n:"بيتزا فيونداشي كبيرة", p:800, i:"🍕"},
+            {n:"بيتزا شيف صغيرة", p:500, i:"🍕"}, {n:"بيتزا شيف كبيرة", p:800, i:"🍕"},
+            {n:"بيتزا بلاتو تونسية 250غ", p:800, i:"🍕"}, {n:"بيتزا بلاتو تونسية 500غ", p:1200, i:"🍕"},
+            {n:"سوفلي تن", p:250, i:"🥐"}, {n:"سوفلي غلال البحر", p:350, i:"🥐"},
+            {n:"سوفلي شورما", p:400, i:"🥐"}, {n:" سوفلي سكالوب", p:400, i:"🥐"},
+            {n:"مقلوب تن", p:350, i:"🌮"}, {n:"مقلوب سكالوب", p:400, i:"🌮"},
+            {n:"مقلوب شورما", p:400, i:"🌮"}, {n:"مقلوب فيونداشي", p:450, i:"🌮"},
+            {n:"ملاوي سكالوب", p:400, i:"🌯"}, {n:"ملاوي فيونداشي", p:450, i:"🌯"},
+            {n:"ملاوي تن", p:250, i:"🌯"}, {n:"ملاوي سلامي أومليت", p:400, i:"🌯"},
+            {n:"ملاوي كويكة", p:400, i:"🌯"}, {n:"ملاوي أومليت تن فرماج", p:400, i:"🌯"},
+            {n:"شاباتي أومليت فرماج", p:200, i:"🫓"}, {n:"شاباتي تن فرماج", p:250, i:"🫓"},
+            {n:"شاباتي أومليت تن فرماج", p:300, i:"🫓"}, {n:"شاباتي شورما", p:350, i:"🫓"},
+            {n:"شاباتي سكالوب", p:350, i:"🫓"}, {n:"شاباتي سبيسيال", p:450, i:"🫓"}
+        ]},
+        { id: 2, name: "Pizzeria Djoker", icon: "fa-pizza-slice", delivery: 90, items: [
+            {n:"بيتزا شوارما", p:500, i:"🍕"}, {n:"بيتزا رويال", p:400, i:"🍕"},
+            {n:"بيتزا 4 فصول", p:600, i:"🍕"}, {n:"بيتزا 8 فصول", p:800, i:"🍕"},
+            {n:"بيتزا 4 أجبان", p:650, i:"🍕"}, {n:"بيتزا فرماج", p:250, i:"🍕"},
+            {n:"بيتزا طون", p:350, i:"🍕"}, {n:"بيتزا فيونداشي", p:350, i:"🍕"},
+            {n:"بيتزا مرقاز", p:350, i:"🍕"}, {n:"بيتزا دجاج", p:400, i:"🍕"},
+            {n:"بيتزا MEGA XXL", p:1500, i:"🍕"},
+            {n:"طبق شوارما", p:400, i:"🍽️"}, {n:"طبق ماريني", p:400, i:"🍽️"},
+            {n:"طبق ليزابا", p:400, i:"🍽️"}, {n:"طبق سبيسيال فيونداشي", p:350, i:"🍽️"},
+            {n:"طبق ميلونجي", p:250, i:"🍽️"}, {n:"طبق عائلي متنوع", p:1500, i:"🍽️"},
+            {n:"سندويش شوارما", p:300, i:"🥖"}, {n:"سندويش ماريني", p:300, i:"🥖"},
+            {n:"سندويش ليزابا", p:300, i:"🥖"}, {n:"سندويش فريت أومليت سبيسيال", p:250, i:"🥖"},
+            {n:"سندويش فريت أومليت", p:150, i:"🥖"}, {n:"سندويش فريت", p:100, i:"🥖"}
+        ]},
+        { id: 3, name: "الطاسيلي", icon: "fa-fire", delivery: 90, items: [
+            {n:"لحم مفور", p:300, i:"🍖"}, {n:"كباب", p:300, i:"🍢"},
+            {n:"دجاج كنتاكي", p:300, i:"🍗"}, {n:"شواء كبدة", p:450, i:"🧆"},
+            {n:"بيتزا عائلية", p:800, i:"🍕"}, {n:"بيتزا كروفات", p:600, i:"🍕"},
+            {n:"بيتزا 4 أجبان", p:450, i:"🍕"}, {n:"بيتزا عادية", p:300, i:"🍕"},
+            {n:"سلطة تونسية", p:210, i:"🥗"}, {n:"فريت أومليت", p:150, i:"🍳"},
+            {n:"ماسيدوان", p:100, i:"🥗"}
+        ]},
+        { id: 4, name: "مطعم الإحسان", icon: "fa-bread-slice", delivery: 90, items: [
+            {n:"مقلوب شوارما", p:400, i:"🌮"}, {n:"مقلوب سكالوب", p:400, i:"🌮"},
+            {n:"مقلوب فيونداشي", p:450, i:"🌮"}, {n:"مقلوب تن", p:350, i:"🌮"},
+            {n:"شاباتي شوارما", p:300, i:"🫓"}, {n:"شاباتي سكالوب", p:350, i:"🫓"},
+            {n:"شاباتي تن فرماج", p:250, i:"🫓"},
+            {n:"ملاوي سكالوب", p:400, i:"🌯"}, {n:"ملاوي فيونداشي", p:450, i:"🌯"},
+            {n:"ملاوي تن", p:250, i:"🌯"}, {n:"ملاوي سلامي أومليت", p:250, i:"🌯"},
+            {n:"سوفلي شورما", p:300, i:"🥐"}, {n:"سوفلي سكالوب", p:300, i:"🥐"},
+            {n:"سوفلي تن", p:250, i:"🥐"}
+        ]}
+    ];
+
+    let cart = [];
+    let selectedRes = null;
+
+    // ========== LOCAL STORAGE ==========
+    function saveUserData() {
+        const form = document.getElementById('final-form');
+        if (!form) return;
+        const name = form.querySelector('[name="الزبون"]');
+        const phone = form.querySelector('[name="الهاتف"]');
+        const addr = form.querySelector('[name="العنوان"]');
+        const userData = {
+            name: name ? name.value : '',
+            phone: phone ? phone.value : '',
+            address: addr ? addr.value : ''
+        };
+        localStorage.setItem('elizi_user', JSON.stringify(userData));
+    }
+
+    function loadUserData() {
+        const saved = localStorage.getItem('elizi_user');
+        if (!saved) return;
+        try {
+            const userData = JSON.parse(saved);
+            const form = document.getElementById('final-form');
+            if (!form) return;
+            const name = form.querySelector('[name="الزبون"]');
+            const phone = form.querySelector('[name="الهاتف"]');
+            const addr = form.querySelector('[name="العنوان"]');
+            if (name && userData.name) name.value = userData.name;
+            if (phone && userData.phone) phone.value = userData.phone;
+            if (addr && userData.address) addr.value = userData.address;
+            
+            // Show saved info banner
+            if (userData.name) {
+                const banner = document.getElementById('saved-info-banner');
+                banner.innerHTML = `<div class="saved-info"><i class="fas fa-user-check"></i> مرحباً مجدداً <strong>${userData.name}</strong>! تم تعبئة بياناتك تلقائياً ✨</div>`;
+            }
+        } catch(e) {}
+    }
+
+    function saveCart() {
+        localStorage.setItem('elizi_cart', JSON.stringify(cart));
+        if (selectedRes) {
+            localStorage.setItem('elizi_selected_res', selectedRes.id);
+        }
+    }
+
+    function loadCart() {
+        const savedCart = localStorage.getItem('elizi_cart');
+        const savedRes = localStorage.getItem('elizi_selected_res');
+        if (savedCart && savedRes) {
+            try {
+                cart = JSON.parse(savedCart);
+                selectedRes = restaurants.find(r => r.id === parseInt(savedRes));
+                if (cart.length > 0 && selectedRes) {
+                    updateCartBar();
+                }
+            } catch(e) {}
+        }
+    }
+
+    function getOrders() {
+        const saved = localStorage.getItem('elizi_orders');
+        if (!saved) return [];
+        try { return JSON.parse(saved); } catch(e) { return []; }
+    }
+
+    function saveOrder(order) {
+        const orders = getOrders();
+        orders.unshift(order);
+        if (orders.length > 20) orders.pop(); // Keep last 20 orders
+        localStorage.setItem('elizi_orders', JSON.stringify(orders));
+        updateOrdersBadge();
+    }
+
+    function updateOrdersBadge() {
+        // Badge removed with bottom nav
+    }
+
+    function updateCartBadge() {
+        // Badge removed with bottom nav
+    }
+
+    // ========== NAVIGATION ==========
+    function navigateTo(page) {
+        if (page === 'orders') {
+            renderOrders();
+            showPage('page-orders');
+        } else if (page === 'home') {
+            if (cart.length > 0 && selectedRes) {
+                showPage('page-menu');
+            } else {
+                showPage('page-res');
+            }
+        } else if (page === 'cart') {
+            if (cart.length > 0 && selectedRes) {
+                showPage('page-checkout');
+            } else {
+                showPage('page-res');
+            }
+        }
+    }
+
+    // ========== ORDERS RENDERING ==========
+    function renderOrders() {
+        const orders = getOrders();
+        const container = document.getElementById('orders-list');
+        
+        if (orders.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <h3>لا توجد طلبات بعد</h3>
+                    <p style="margin-top: 10px;">ابدأ بطلب وجبتك المفضلة الآن! 🍕</p>
+                    <button onclick="showPage('page-res')" style="margin-top: 20px; background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 12px; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-utensils"></i> اطلب الآن
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        orders.forEach((order, idx) => {
+            const statusConfig = getStatusConfig(order.status);
+            const elapsed = Math.floor((Date.now() - order.timestamp) / 1000);
+            const isRecent = elapsed < 1800; // Less than 30 min
+            
+            html += `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <span class="order-id">#${order.id}</span>
+                            <span class="order-date">${formatDate(order.timestamp)}</span>
+                        </div>
+                        <span class="order-status ${statusConfig.class}">
+                            ${statusConfig.icon} ${statusConfig.text}
+                        </span>
+                    </div>
+                    
+                    <div style="font-weight: bold; margin-bottom: 8px;">
+                        <i class="fas fa-store" style="color: var(--primary);"></i> ${order.restaurant}
+                    </div>
+                    
+                    <div class="order-items-list">
+                        ${order.items.map(item => `<div>• ${item.name} — ${item.price} دج</div>`).join('')}
+                    </div>
+                    
+                    <div class="order-total-row">
+                        <span>التوصيل: ${order.delivery} دج</span>
+                        <span style="color: var(--primary);">الإجمالي: ${order.total} دج</span>
+                    </div>
+                    
+                    ${order.status !== 'delivered' ? `
+                        <div class="order-timer-box">
+                            <div style="font-size: 0.8rem; opacity: 0.9;">⏱️ مرّ على طلبك</div>
+                            <div class="order-timer-display" data-time="${order.timestamp}">${formatElapsed(elapsed)}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 5px;">${getTimerMessage(elapsed)}</div>
+                        </div>
+                        
+                        <!-- خطوات التتبع -->
+                        <div class="progress-steps">
+                            <div class="step ${elapsed >= 0 ? (elapsed > 450 ? 'done' : 'active') : ''}">
+                                <div class="step-circle">${elapsed > 450 ? '✓' : '1'}</div>
+                                <span>تم الاستلام</span>
+                            </div>
+                            <div class="step ${elapsed > 450 ? (elapsed > 900 ? 'done' : 'active') : ''}">
+                                <div class="step-circle">${elapsed > 900 ? '✓' : '2'}</div>
+                                <span>جاري التحضير</span>
+                            </div>
+                            <div class="step ${elapsed > 900 ? (elapsed > 1500 ? 'done' : 'active') : ''}">
+                                <div class="step-circle">${elapsed > 1500 ? '✓' : '3'}</div>
+                                <span>في الطريق</span>
+                            </div>
+                            <div class="step ${elapsed > 1800 ? 'done' : ''}">
+                                <div class="step-circle">${elapsed > 1800 ? '✓' : '4'}</div>
+                                <span>تم التوصيل</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="text-align: center; padding: 12px; background: #d4edda; border-radius: 12px; margin-top: 10px; color: #155724;">
+                            <i class="fas fa-check-circle"></i> تم التوصيل بنجاح — بالهناء والشفاء! 🎉
+                        </div>
+                    `}
+                    
+                    <button onclick="reorder(${idx})" style="margin-top: 12px; width: 100%; background: var(--accent); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-redo"></i> إعادة الطلب
+                    </button>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Start updating timers for active orders
+        startOrderTimers();
+    }
+
+    function getStatusConfig(status) {
+        const configs = {
+            'pending':    { class: 'status-pending',    icon: '⏳', text: 'قيد الانتظار' },
+            'preparing':  { class: 'status-preparing',  icon: '🍳', text: 'جاري التحضير' },
+            'delivering': { class: 'status-delivering', icon: '🛵', text: 'في الطريق' },
+            'delivered':  { class: 'status-delivered',  icon: '✅', text: 'تم التوصيل' }
+        };
+        return configs[status] || configs['pending'];
+    }
+
+    function formatElapsed(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function getTimerMessage(seconds) {
+        if (seconds < 60) return 'جاري تجهيز طلبك...';
+        if (seconds < 900) return 'الطلب في الطريق إليك 🛵';
+        if (seconds < 1800) return 'اقترب موعد الوصول! 🏠';
+        return 'وصل طلبك! بالهناء والشفاء 🎉';
+    }
+
+    function formatDate(timestamp) {
+        const d = new Date(timestamp);
+        const today = new Date();
+        const isToday = d.toDateString() === today.toDateString();
+        const time = d.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' });
+        if (isToday) return `اليوم ${time}`;
+        return `${d.toLocaleDateString('ar-DZ')} ${time}`;
+    }
+
+    let orderTimerInterval = null;
+    function startOrderTimers() {
+        if (orderTimerInterval) clearInterval(orderTimerInterval);
+        orderTimerInterval = setInterval(() => {
+            document.querySelectorAll('.order-timer-display').forEach(el => {
+                const ts = parseInt(el.dataset.time);
+                if (ts) {
+                    const elapsed = Math.floor((Date.now() - ts) / 1000);
+                    el.innerText = formatElapsed(elapsed);
+                    // Update message
+                    const msgEl = el.parentElement.querySelector('div:last-child');
+                    if (msgEl) msgEl.innerText = getTimerMessage(elapsed);
+                }
+            });
+        }, 1000);
+    }
+
+    function reorder(orderIdx) {
+        const orders = getOrders();
+        const order = orders[orderIdx];
+        if (!order) return;
+        
+        const res = restaurants.find(r => r.name === order.restaurant);
+        if (!res) return;
+        
+        cart = [];
+        selectedRes = res;
+        order.items.forEach(item => {
+            cart.push({ name: item.name, price: item.price });
+        });
+        saveCart();
+        updateCartBar();
+        showPage('page-checkout');
+    }
+
+    // ========== INIT ==========
+    function init() {
+        const resDiv = document.getElementById('res-list');
+        restaurants.forEach(r => {
+            resDiv.innerHTML += `
+                <div class="res-card" onclick="loadMenu(${r.id})">
+                    <i class="fas ${r.icon}"></i>
+                    <h3>${r.name}</h3>
+                    <p>التوصيل: ${r.delivery} دج</p>
+                </div>
+            `;
+        });
+        loadCart();
+        updateOrdersBadge();
+        updateCartBadge();
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        window.scrollTo(0,0);
+        if (id === 'page-checkout') {
+            updateFinalSummary();
+            loadUserData(); // Auto-fill saved data
+            document.getElementById('cart-bar').classList.add('hidden');
+            // Save user data on input change
+            const form = document.getElementById('final-form');
+            form.querySelectorAll('input, textarea').forEach(inp => {
+                inp.addEventListener('input', saveUserData);
+            });
+        } else if (id === 'page-menu' && cart.length > 0) {
+            document.getElementById('cart-bar').classList.remove('hidden');
+        }
+    }
+
+    function loadMenu(resId) {
+        selectedRes = restaurants.find(r => r.id === resId);
+        document.getElementById('menu-title').innerText = selectedRes.name;
+        const itemsDiv = document.getElementById('items-list');
+        itemsDiv.innerHTML = '';
+        
+        selectedRes.items.forEach(item => {
+            itemsDiv.innerHTML += `
+                <div class="menu-item">
+                    <div class="item-detail">
+                        <span class="item-icon">${item.i}</span>
+                        <div>
+                            <div class="item-name">${item.n}</div>
+                            <div class="item-price">${item.p} دج</div>
+                        </div>
+                    </div>
+                    <button class="btn-add" onclick="addToCart('${item.n}', ${item.p})">إضافة +</button>
+                </div>
+            `;
+        });
+        showPage('page-menu');
+    }
+
+    function addToCart(name, price) {
+        cart.push({name, price});
+        saveCart();
+        updateCartBar();
+        updateCartBadge();
+    }
+
+    function updateCartBar() {
+        const bar = document.getElementById('cart-bar');
+        if (cart.length > 0) {
+            bar.classList.remove('hidden');
+            document.getElementById('cart-count').innerText = cart.length;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cart-total-preview').innerText = total + " دج";
+        } else {
+            bar.classList.add('hidden');
+        }
+        updateCartBadge();
+    }
+
+    function updateFinalSummary() {
+        const summaryDiv = document.getElementById('final-cart-summary');
+        let html = '';
+        let itemsText = '';
+        
+        cart.forEach((item, index) => {
+            html += `
+                <div class="cart-row">
+                    <span>${item.name}</span>
+                    <span>${item.price} دج <i class="fas fa-trash" onclick="removeFromCart(${index})" style="color:red; cursor:pointer; margin-right:10px;"></i></span>
+                </div>
+            `;
+            itemsText += `- ${item.name} (${item.price} دج)\n`;
+        });
+
+        const itemsTotal = cart.reduce((sum, i) => sum + i.price, 0);
+        const finalTotal = itemsTotal + (selectedRes ? selectedRes.delivery : 0);
+
+        summaryDiv.innerHTML = html;
+        document.getElementById('summary-delivery').innerText = selectedRes ? selectedRes.delivery : 0;
+        document.getElementById('summary-total').innerText = finalTotal;
+
+        document.getElementById('hidden-cart-data').value = itemsText;
+        document.getElementById('hidden-res-name').value = selectedRes ? selectedRes.name : '';
+        document.getElementById('hidden-total-price').value = finalTotal + " دج";
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        saveCart();
+        if (cart.length === 0) {
+            showPage('page-menu');
+        } else {
+            updateFinalSummary();
+            updateCartBar();
+        }
+    }
+
+    function goBackToRes() {
+        if(cart.length > 0) {
+            if(confirm("سيتم إفراغ السلة عند تغيير المطعم، هل أنت متأكد؟")) {
+                cart = [];
+                selectedRes = null;
+                localStorage.removeItem('elizi_cart');
+                localStorage.removeItem('elizi_selected_res');
+                updateCartBar();
+                showPage('page-res');
+            }
+        } else {
+            showPage('page-res');
+        }
+    }
+
+    init();
+
+    // ========== DELIVERY TIMER (Checkout) ==========
+    let timerInterval = null;
+    let timerSeconds = 0;
+
+    function startDeliveryTimer() {
+        const timerBox = document.getElementById('delivery-timer-box');
+        timerBox.style.display = 'block';
+        document.getElementById('timer-status').innerText = 'جاري تجهيز طلبك...';
+        
+        timerSeconds = 0;
+        if (timerInterval) clearInterval(timerInterval);
+        
+        timerInterval = setInterval(() => {
+            timerSeconds++;
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('delivery-timer').innerText = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            const progress = Math.min((timerSeconds / 1800) * 100, 100);
+            document.getElementById('timer-bar').style.width = progress + '%';
+            
+            if (timerSeconds <= 60) {
+                document.getElementById('timer-status').innerText = 'جاري تجهيز طلبك...';
+            } else if (timerSeconds <= 900) {
+                document.getElementById('timer-status').innerText = 'الطلب في الطريق إليك 🛵';
+            } else if (timerSeconds <= 1800) {
+                document.getElementById('timer-status').innerText = 'اقترب موعد الوصول! 🏠';
+            } else {
+                document.getElementById('timer-status').innerText = 'وصل طلبك! بالهناء والشفاء 🎉';
+                document.getElementById('timer-bar').style.background = '#2ecc71';
+            }
+        }, 1000);
+
+        timerBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // ========== ORDER SUBMISSION ==========
+    function submitOrder(e) {
+        e.preventDefault();
+        
+        try { updateFinalSummary(); } catch(err) { console.error(err); }
+        
+        const form = document.getElementById('final-form');
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+        btn.disabled = true;
+        
+        // Save user data before submitting
+        saveUserData();
+        
+        const data = {};
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            if (data[key]) {
+                data[key] = data[key] + ', ' + value;
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        fetch('https://formspree.io/f/xojrlwag', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.ok !== false) {
+                onSuccess(form, btn, data);
+            } else {
+                throw new Error(result.error || 'Server error');
+            }
+        })
+        .catch(error => {
+            console.log('Fetch failed, trying iframe fallback...', error);
+            submitViaIframe(form, btn, originalText, data);
+        });
+    }
+    
+    function onSuccess(form, btn, data) {
+        startDeliveryTimer();
+        
+        // Save order to localStorage
+        const order = {
+            id: 'ELZ-' + Date.now().toString().slice(-6),
+            timestamp: Date.now(),
+            restaurant: selectedRes ? selectedRes.name : 'غير معروف',
+            items: [...cart],
+            delivery: selectedRes ? selectedRes.delivery : 0,
+            total: document.getElementById('summary-total').innerText,
+            name: data['الزبون'] || '',
+            phone: data['الهاتف'] || '',
+            address: data['العنوان'] || '',
+            status: 'preparing' // preparing -> delivering -> delivered
+        };
+        saveOrder(order);
+        
+        // Simulate status changes
+        setTimeout(() => {
+            const orders = getOrders();
+            if (orders[0] && orders[0].id === order.id) {
+                orders[0].status = 'delivering';
+                localStorage.setItem('elizi_orders', JSON.stringify(orders));
+            }
+        }, 300000); // After 5 min -> delivering
+        
+        setTimeout(() => {
+            const orders = getOrders();
+            if (orders[0] && orders[0].id === order.id) {
+                orders[0].status = 'delivered';
+                localStorage.setItem('elizi_orders', JSON.stringify(orders));
+            }
+        }, 1800000); // After 30 min -> delivered
+        
+        const successMsg = document.createElement('div');
+        successMsg.style.cssText = 'background: #27ae60; color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold;';
+        successMsg.innerHTML = `<i class="fas fa-check-circle" style="font-size: 1.5rem;"></i><br>تم إرسال الطلب بنجاح! ✅<br><span style="font-size: 0.85rem; font-weight: normal;">رقم الطلب: ${order.id}</span><br><span style="font-size: 0.85rem; font-weight: normal;">سنتواصل معك قريباً</span>`;
+        form.insertBefore(successMsg, form.firstChild);
+        
+        cart = [];
+        selectedRes = null;
+        localStorage.removeItem('elizi_cart');
+        localStorage.removeItem('elizi_selected_res');
+        updateCartBar();
+        updateOrdersBadge();
+        
+        const inputs = form.querySelectorAll('input, textarea, button');
+        inputs.forEach(inp => {
+            if (inp.type !== 'hidden') inp.disabled = true;
+        });
+        
+        btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال';
+        btn.style.background = '#27ae60';
+    }
+    
+    function submitViaIframe(form, btn, originalText, data) {
+        const iframe = document.createElement('iframe');
+        iframe.name = 'formspree-frame';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        const tempForm = document.createElement('form');
+        tempForm.action = 'https://formspree.io/f/xojrlwag';
+        tempForm.method = 'POST';
+        tempForm.target = 'formspree-frame';
+        tempForm.style.display = 'none';
+        
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            tempForm.appendChild(input);
+        }
+        
+        document.body.appendChild(tempForm);
+        tempForm.submit();
+        
+        setTimeout(() => {
+            onSuccess(form, btn, data);
+            try {
+                document.body.removeChild(tempForm);
+                document.body.removeChild(iframe);
+            } catch(e) {}
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
+
